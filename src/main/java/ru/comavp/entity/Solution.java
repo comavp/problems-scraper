@@ -10,5 +10,7 @@ public class Solution {
     String solutionSourceCode;
     String problemUrl;
     String problemName;
+    String solutionId;
     LocalDateTime submitDate;
+    String fileExtension;
 }
