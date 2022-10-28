@@ -1,23 +1,15 @@
 package ru.comavp;
 
-import ru.comavp.entity.Author;
+import lombok.extern.slf4j.Slf4j;
+import ru.comavp.scraper.ScraperImpl;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 
+@Slf4j
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        Author author = new Author(loadApplicationProperties());
-        //String response = new RestClientImp().executePostRequest();
-        //System.out.println(response);
-    }
-
-    static Properties loadApplicationProperties() throws IOException {
-        String propertiesPath = Application.class.getClassLoader().getResource("application.yml").getPath();
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(propertiesPath));
-        return properties;
+        log.debug("problems-scraper successfully started");
+        new ScraperImpl().saveTimusSolutionById();
     }
 }
