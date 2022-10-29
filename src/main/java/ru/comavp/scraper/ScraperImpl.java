@@ -33,8 +33,8 @@ public class ScraperImpl implements Scraper {
     }
 
     @Override
-    public void saveAllTimusSolutions() {
-
+    public void saveAllTimusSolutions() throws IOException {
+        timusApi.getAllSolutionsInfo();
     }
 
     private String getComment() {
