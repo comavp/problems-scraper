@@ -4,6 +4,8 @@ import ru.comavp.client.RestClient;
 import ru.comavp.client.RestClientImp;
 import ru.comavp.entity.Author;
 import ru.comavp.entity.Solution;
+import ru.comavp.parser.Parser;
+import ru.comavp.parser.ParserImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,10 +20,12 @@ public class TimusApiImpl implements TimusApi {
 
     private RestClient client;
     private Author author;
+    private Parser parser;
 
     public TimusApiImpl(Author author) {
         this.author = author;
         this.client = new RestClientImp();
+        this.parser = new ParserImpl();
     }
 
     @Override
@@ -38,7 +42,6 @@ public class TimusApiImpl implements TimusApi {
             put("count", "1000");
         }};
         String htmlResponse = client.executeGetRequest(GET_ACCEPTED_SOLUTIONS_PATH, queryParams);
-        System.out.println(htmlResponse);
-        return null;
+        return parser.parseSolutionsInfoPage(htmlResponse);
     }
 }

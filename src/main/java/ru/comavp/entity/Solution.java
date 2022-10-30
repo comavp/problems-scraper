@@ -1,16 +1,17 @@
 package ru.comavp.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class Solution {
 
-    String solutionSourceCode;
-    String problemUrl;
-    String problemName;
     String solutionId;
-    LocalDateTime submitDate;
+    Problem problem;
+    String submitDate;
     String fileExtension;
+    String solutionSourceCode;
 }

@@ -2,6 +2,7 @@ package ru.comavp.scraper;
 
 import ru.comavp.Application;
 import ru.comavp.entity.Author;
+import ru.comavp.entity.Solution;
 import ru.comavp.savers.FileSaver;
 import ru.comavp.savers.Saver;
 import ru.comavp.timus.TimusApi;
@@ -9,6 +10,7 @@ import ru.comavp.timus.TimusApiImpl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import static ru.comavp.entity.FileExtensionsEnum.C;

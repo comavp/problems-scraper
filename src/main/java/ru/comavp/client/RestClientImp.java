@@ -36,6 +36,7 @@ public class RestClientImp implements RestClient {
 
         Request request = new Request.Builder()
                 .url(urlBuilder.build().toString())
+                .addHeader("Accept-Language", "ru-RU")
                 .get()
                 .build();
 

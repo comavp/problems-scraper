@@ -1,5 +1,7 @@
 package ru.comavp.entity;
 
+import java.util.Arrays;
+
 public enum FileExtensionsEnum {
 
     C("Visual C 2013", ".c"),
@@ -19,5 +21,9 @@ public enum FileExtensionsEnum {
 
     public String getExtension() {
         return this.fileExtension.getExtension();
+    }
+
+    public static FileExtensionsEnum getElementByLanguage(String languageName) {
+        return Arrays.stream(values()).filter(item -> languageName.equals(item.getLanguage())).findFirst().get();
     }
 }
