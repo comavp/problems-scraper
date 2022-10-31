@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.comavp.entity.FileExtensionsEnum.C;
-
 public class ScraperImpl implements Scraper {
 
     private Author author;
     private TimusApi timusApi;
     private Saver saver;
+
+    private String TIMUS_PATH = "Timus Online Judge//";
 
     public ScraperImpl() throws IOException {
         this.author = new Author(loadApplicationProperties());
@@ -31,19 +31,29 @@ public class ScraperImpl implements Scraper {
 
     @Override
     public void saveTimusSolutionById() throws IOException {
-        String solutionId = "7122067";
+        /*String solutionId = "7122067";
         String solutionSourceCode = timusApi.getSolutionSourceCodeById(solutionId);
-        saver.saveSourceCode(solutionId + C.getExtension(), getComment() + solutionSourceCode);
+        saver.saveSourceCode(TIMUS_PATH + solutionId + C.getExtension(), getComment() + solutionSourceCode);*/
     }
 
     @Override
     public void saveAllTimusSolutions() throws IOException {
         List<Solution> solutionsList = timusApi.getAllSolutionsInfo();
         changeProblemNamesForDuplicates(solutionsList);
+        solutionsList.forEach(item -> {
+            String fileName = TIMUS_PATH + item.getFileName();
+            String sourceCode = getComment(item);
+            try {
+                sourceCode += timusApi.getSolutionSourceCodeById(item.getSolutionId());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            saver.saveSourceCode(fileName, sourceCode);
+        });
     }
 
-    private String getComment() {
-        return "// https://acm.timus.ru/problem.aspx?space=1&num=1000\n\n";
+    private String getComment(Solution solution) {
+        return "// " + solution.getProblem().getProblemUrl() + "\n\n";
     }
 
     private Properties loadApplicationProperties() throws IOException {

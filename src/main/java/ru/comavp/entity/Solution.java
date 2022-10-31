@@ -16,4 +16,8 @@ public class Solution {
     public void changeProblemName(String newProblemName) {
         problem.setProblemName(newProblemName);
     }
+
+    public String getFileName() {
+        return problem.getProblemId() + ". " + problem.getProblemName() + fileExtension;
+    }
 }
