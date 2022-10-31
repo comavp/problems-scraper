@@ -10,7 +10,9 @@ import ru.comavp.timus.TimusApiImpl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static ru.comavp.entity.FileExtensionsEnum.C;
@@ -36,7 +38,8 @@ public class ScraperImpl implements Scraper {
 
     @Override
     public void saveAllTimusSolutions() throws IOException {
-        timusApi.getAllSolutionsInfo();
+        List<Solution> solutionsList = timusApi.getAllSolutionsInfo();
+        changeProblemNamesForDuplicates(solutionsList);
     }
 
     private String getComment() {
@@ -48,5 +51,20 @@ public class ScraperImpl implements Scraper {
         Properties properties = new Properties();
         properties.load(new FileInputStream(propertiesPath));
         return properties;
+    }
+
+    private void changeProblemNamesForDuplicates(List<Solution> solutionList) {
+        Map<String, Integer> countMap = new HashMap<>();
+        solutionList.forEach(solution -> {
+            String problemName = solution.getProblem().getProblemName();
+            if (!countMap.containsKey(problemName)) {
+                countMap.put(problemName, 1);
+            } else {
+                Integer cnt = countMap.get(problemName);
+                cnt++;
+                solution.changeProblemName(problemName + "_" + cnt);
+                countMap.replace(problemName, cnt);
+            }
+        });
     }
 }

@@ -3,8 +3,6 @@ package ru.comavp.entity;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 public class Solution {
@@ -14,4 +12,8 @@ public class Solution {
     String submitDate;
     String fileExtension;
     String solutionSourceCode;
+
+    public void changeProblemName(String newProblemName) {
+        problem.setProblemName(newProblemName);
+    }
 }

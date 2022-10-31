@@ -43,7 +43,7 @@ public class ParserImpl implements Parser {
 
     private Problem parseProblemTag(Element problemTag) {
         String problemUrl = problemTag.getElementsByTag("a").attr("href");
-        String[] problemStr = problemTag.getElementsByTag("a").text().split(". ");
+        String[] problemStr = problemTag.getElementsByTag("a").text().split("\\. ");
         String problemId = problemStr[0];
         String problemName = problemStr[1];
         return Problem.builder()
