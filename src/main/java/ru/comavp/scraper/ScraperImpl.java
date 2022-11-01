@@ -53,7 +53,7 @@ public class ScraperImpl implements Scraper {
     }
 
     private String getComment(Solution solution) {
-        return "// " + solution.getProblem().getProblemUrl() + "\n\n";
+        return "/*\n" + solution.getProblem().getProblemName() + "\n" + solution.getProblem().getProblemUrl() + "\n*/\n\n";
     }
 
     private Properties loadApplicationProperties() throws IOException {
@@ -66,14 +66,14 @@ public class ScraperImpl implements Scraper {
     private void changeProblemNamesForDuplicates(List<Solution> solutionList) {
         Map<String, Integer> countMap = new HashMap<>();
         solutionList.forEach(solution -> {
-            String problemName = solution.getProblem().getProblemName();
-            if (!countMap.containsKey(problemName)) {
-                countMap.put(problemName, 1);
+            String problemId = solution.getProblem().getProblemId();
+            if (!countMap.containsKey(problemId)) {
+                countMap.put(problemId, 1);
             } else {
-                Integer cnt = countMap.get(problemName);
+                Integer cnt = countMap.get(problemId);
                 cnt++;
-                solution.changeProblemName(problemName + "_" + cnt);
-                countMap.replace(problemName, cnt);
+                solution.changeProblemId(problemId + "_" + cnt);
+                countMap.replace(problemId, cnt);
             }
         });
     }

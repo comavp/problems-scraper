@@ -13,11 +13,11 @@ public class Solution {
     String fileExtension;
     String solutionSourceCode;
 
-    public void changeProblemName(String newProblemName) {
-        problem.setProblemName(newProblemName);
+    public void changeProblemId(String newProblemId) {
+        problem.setProblemId(newProblemId);
     }
 
     public String getFileName() {
-        return problem.getProblemId() + ". " + problem.getProblemName() + fileExtension;
+        return problem.getProblemId() + fileExtension;
     }
 }
