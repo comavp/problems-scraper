@@ -8,6 +8,7 @@ import ru.comavp.entity.Problem;
 import ru.comavp.entity.Solution;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.comavp.ApiUtils.CODEWARS_BASE_URL;
@@ -16,7 +17,7 @@ import static ru.comavp.entity.FileExtensionsEnum.getElementByLanguage;
 
 public class ParserImpl implements Parser {
 
-    private Integer codewarsSolutionId = 1;
+    private int codewarsSolutionId = 1;
 
     @Override
     public List<Solution> parseTimusSolutionsPage(String htmlPage) {
@@ -33,21 +34,24 @@ public class ParserImpl implements Parser {
         Document doc = Jsoup.parse(htmlPage);
         Elements rows = doc.getElementsByClass("list-item-solutions");
         return rows.stream()
-                .map(this::parseCodewarsSolutionInfoRow)
+                .flatMap(row -> parseCodewarsSolutionInfoRow(row).stream())
                 .toList();
     }
 
-    private Solution parseCodewarsSolutionInfoRow(Element row) {
-        Element codeTag = row.getElementsByTag("code").get(0);
-        String language = codeTag.attr("data-language");
+    private List<Solution> parseCodewarsSolutionInfoRow(Element row) {
         Element problemInfoTag = row.getElementsByClass("item-title").get(0);
-        return Solution.builder()
-                .solutionId((codewarsSolutionId++).toString())
-                .problem(parseCodeWarsProblemTag(problemInfoTag))
-                .submitDate("")
-                .fileExtension(getElementByLanguage(language).getExtension())
-                .solutionSourceCode(codeTag.text())
-                .build();
+        return row.getElementsByTag("code").stream()
+                .map(codeTag -> {
+                    String language = codeTag.attr("data-language");
+                    return Solution.builder()
+                            .solutionId(String.valueOf(codewarsSolutionId++))
+                            .problem(parseCodeWarsProblemTag(problemInfoTag))
+                            .submitDate("")
+                            .fileExtension(getElementByLanguage(language).getExtension())
+                            .solutionSourceCode(codeTag.text())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     private Solution parseTimusSolutionInfoRow(Element row) {

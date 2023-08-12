@@ -62,6 +62,7 @@ public class ScraperImpl implements Scraper {
     @Override
     public void saveAllCodewarsSolutions() throws IOException {
         List<Solution> solutionList = codewarsApi.getAllSolutionsInfo();
+        changeProblemNamesForDuplicates(solutionList);
         solutionList.forEach(solution -> {
             String fileName = CODEWARS_PATH + solution.getFileName().replaceAll(INVALID_CHARACTERS, "");
             String sourceCode = getComment(solution) + solution.getSolutionSourceCode();
