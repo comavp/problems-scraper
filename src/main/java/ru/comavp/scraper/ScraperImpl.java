@@ -27,6 +27,8 @@ public class ScraperImpl implements Scraper {
     private String TIMUS_PATH = "Timus Online Judge//";
     private String CODEWARS_PATH = "Codewars//";
 
+    public static String INVALID_CHARACTERS = "[\\\\/:*?\"<>|]";
+
     public ScraperImpl() throws IOException {
         this.author = new Author(loadApplicationProperties());
         this.timusApi = new TimusApiImpl(author);
@@ -61,7 +63,7 @@ public class ScraperImpl implements Scraper {
     public void saveAllCodewarsSolutions() throws IOException {
         List<Solution> solutionList = codewarsApi.getAllSolutionsInfo();
         solutionList.forEach(solution -> {
-            String fileName = CODEWARS_PATH + solution.getFileName();
+            String fileName = CODEWARS_PATH + solution.getFileName().replaceAll(INVALID_CHARACTERS, "");
             String sourceCode = getComment(solution) + solution.getSolutionSourceCode();
             saver.saveSourceCode(fileName, sourceCode);
         });

@@ -47,20 +47,20 @@ public class RestClientImp implements RestClient {
         return response.body().string();
     }
 
-    public String executeGetRequestWithCookies(String url, Map<String, String> queryParams, String cookies) throws IOException {
+    public String executeGetRequestWithHeaders(String url, Map<String, String> queryParams, Map<String, String> headers) throws IOException {
         OkHttpClient client = new OkHttpClient.Builder().build();
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
         queryParams.forEach(urlBuilder::addQueryParameter);
 
-        Request request = new Request.Builder()
+        Request.Builder requestBuilder = new Request.Builder()
                 .url(urlBuilder.build().toString())
-                .addHeader("Cookie", cookies)
-                .get()
-                .build();
+                .get();
+        headers.forEach(requestBuilder::addHeader);
+        Request request = requestBuilder.build();
 
         Response response = client.newCall(request).execute();
-        log.info("Request with url: " + url  + " was sent");
+        log.info("Request with url: " + request.url()  + " was sent");
         log.debug("Response code: " + response.code());
 
         return response.body().string();

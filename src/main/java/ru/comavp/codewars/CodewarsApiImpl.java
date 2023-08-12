@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ru.comavp.ApiUtils.GET_CODEWARS_COMPLETES_SOLUTIONS_PATH;
 
@@ -29,13 +30,20 @@ public class CodewarsApiImpl implements CodewarsApi {
 
     @Override
     public List<Solution> getAllSolutionsInfo() throws IOException {
-        String solutionsPage = client.executeGetRequestWithCookies(GET_CODEWARS_COMPLETES_SOLUTIONS_PATH, new HashMap<>(), COOKIES);
-        List<Solution> solutionList = parser.parseCodewarsSolutionsPage(solutionsPage);
-//        List<Solution> solutionList2 = parser.parseCodewarsSolutionsPage(client.executeGetRequestWithCookies(
-//                GET_CODEWARS_COMPLETES_SOLUTIONS_PATH,
-//                new HashMap<>() {{ put("page", "1"); }},
-//                COOKIES
-//        ));
+        String solutionsPage = client.executeGetRequestWithHeaders(GET_CODEWARS_COMPLETES_SOLUTIONS_PATH, new HashMap<>(),
+                new HashMap<>() {{ put("Cookie", COOKIES); }});
+        List<Solution> solutionList = new ArrayList<>(parser.parseCodewarsSolutionsPage(solutionsPage));
+
+        for (int i = 1; i <= totalPagesNumber; i++) {
+            solutionList.addAll(parser.parseCodewarsSolutionsPage(client.executeGetRequestWithHeaders(
+                    GET_CODEWARS_COMPLETES_SOLUTIONS_PATH,
+                    Map.of("page", String.valueOf(i)),
+                    Map.of(
+                            "Cookie", COOKIES,
+                            "X-Requested-With", "XMLHttpRequest")
+                    )
+            ));
+        }
         return solutionList;
     }
 }

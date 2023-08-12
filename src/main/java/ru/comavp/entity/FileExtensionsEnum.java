@@ -1,15 +1,18 @@
 package ru.comavp.entity;
 
+import ru.comavp.exceptions.UnknownFileExtensionException;
+
 import java.util.Arrays;
 
 public enum FileExtensionsEnum {
 
-    C("Visual C 2013", ".c"),
+    C13("Visual C 2013", ".c"),
     CPP13("Visual C++ 2013", ".cpp"),
     CPP17("Visual C++ 2017", ".cpp"),
     CPP19("Visual C++ 2019", ".cpp"),
 
     CPP("cpp", ".cpp"),
+    C("c", ".c"),
     JAVA("java", ".java"),
     PYTHON("python", ".py"),
     PHP("php", ".php");
@@ -29,6 +32,9 @@ public enum FileExtensionsEnum {
     }
 
     public static FileExtensionsEnum getElementByLanguage(String languageName) {
-        return Arrays.stream(values()).filter(item -> languageName.equals(item.getLanguage())).findFirst().get();
+        return Arrays.stream(values())
+                .filter(item -> languageName.equals(item.getLanguage()))
+                .findFirst()
+                .orElseThrow(() -> new UnknownFileExtensionException("Can't find file extension for language: " + languageName));
     }
 }
