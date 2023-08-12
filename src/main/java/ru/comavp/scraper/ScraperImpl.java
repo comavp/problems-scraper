@@ -1,6 +1,8 @@
 package ru.comavp.scraper;
 
 import ru.comavp.Application;
+import ru.comavp.codewars.CodewarsApi;
+import ru.comavp.codewars.CodewarsApiImpl;
 import ru.comavp.entity.Author;
 import ru.comavp.entity.Solution;
 import ru.comavp.savers.FileSaver;
@@ -19,13 +21,16 @@ public class ScraperImpl implements Scraper {
 
     private Author author;
     private TimusApi timusApi;
+    private CodewarsApi codewarsApi;
     private Saver saver;
 
     private String TIMUS_PATH = "Timus Online Judge//";
+    private String CODEWARS_PATH = "Codewars//";
 
     public ScraperImpl() throws IOException {
         this.author = new Author(loadApplicationProperties());
         this.timusApi = new TimusApiImpl(author);
+        this.codewarsApi = new CodewarsApiImpl();
         this.saver = new FileSaver();
     }
 
@@ -48,6 +53,16 @@ public class ScraperImpl implements Scraper {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            saver.saveSourceCode(fileName, sourceCode);
+        });
+    }
+
+    @Override
+    public void saveAllCodewarsSolutions() throws IOException {
+        List<Solution> solutionList = codewarsApi.getAllSolutionsInfo();
+        solutionList.forEach(solution -> {
+            String fileName = CODEWARS_PATH + solution.getFileName();
+            String sourceCode = getComment(solution) + solution.getSolutionSourceCode();
             saver.saveSourceCode(fileName, sourceCode);
         });
     }

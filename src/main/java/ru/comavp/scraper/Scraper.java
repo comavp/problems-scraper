@@ -6,4 +6,6 @@ public interface Scraper {
 
     void saveTimusSolutionById() throws IOException;
     void saveAllTimusSolutions() throws IOException;
+
+    void saveAllCodewarsSolutions() throws IOException;
 }

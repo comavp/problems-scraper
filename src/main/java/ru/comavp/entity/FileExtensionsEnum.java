@@ -7,7 +7,12 @@ public enum FileExtensionsEnum {
     C("Visual C 2013", ".c"),
     CPP13("Visual C++ 2013", ".cpp"),
     CPP17("Visual C++ 2017", ".cpp"),
-    CPP19("Visual C++ 2019", ".cpp");
+    CPP19("Visual C++ 2019", ".cpp"),
+
+    CPP("cpp", ".cpp"),
+    JAVA("java", ".java"),
+    PYTHON("python", ".py"),
+    PHP("php", ".php");
 
     private FileExtension fileExtension;
 

@@ -42,6 +42,6 @@ public class TimusApiImpl implements TimusApi {
             put("count", "1000");
         }};
         String htmlResponse = client.executeGetRequest(GET_ACCEPTED_SOLUTIONS_PATH, queryParams);
-        return parser.parseSolutionsInfoPage(htmlResponse);
+        return parser.parseTimusSolutionsPage(htmlResponse);
     }
 }

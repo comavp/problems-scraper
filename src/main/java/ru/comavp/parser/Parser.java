@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface Parser {
 
-    List<Solution> parseSolutionsInfoPage(String htmlPage);
+    List<Solution> parseTimusSolutionsPage(String htmlPage);
+    List<Solution> parseCodewarsSolutionsPage(String htmlPage);
 }
