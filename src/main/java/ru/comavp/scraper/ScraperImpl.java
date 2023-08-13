@@ -5,6 +5,8 @@ import ru.comavp.codewars.CodewarsApi;
 import ru.comavp.codewars.CodewarsApiImpl;
 import ru.comavp.entity.Author;
 import ru.comavp.entity.Solution;
+import ru.comavp.leetcode.LeetcodeApi;
+import ru.comavp.leetcode.LeetcodeApiImpl;
 import ru.comavp.savers.FileSaver;
 import ru.comavp.savers.Saver;
 import ru.comavp.timus.TimusApi;
@@ -22,10 +24,12 @@ public class ScraperImpl implements Scraper {
     private Author author;
     private TimusApi timusApi;
     private CodewarsApi codewarsApi;
+    private LeetcodeApi leetcodeApi;
     private Saver saver;
 
     private String TIMUS_PATH = "Timus Online Judge//";
     private String CODEWARS_PATH = "Codewars//";
+    private String LEETCODE_PATH = "Leetcode//";
 
     public static String INVALID_CHARACTERS = "[\\\\/:*?\"<>|]";
 
@@ -33,6 +37,7 @@ public class ScraperImpl implements Scraper {
         this.author = new Author(loadApplicationProperties());
         this.timusApi = new TimusApiImpl(author);
         this.codewarsApi = new CodewarsApiImpl();
+        this.leetcodeApi = new LeetcodeApiImpl();
         this.saver = new FileSaver();
     }
 
@@ -65,6 +70,17 @@ public class ScraperImpl implements Scraper {
         changeProblemNamesForDuplicates(solutionList);
         solutionList.forEach(solution -> {
             String fileName = CODEWARS_PATH + solution.getFileName().replaceAll(INVALID_CHARACTERS, "");
+            String sourceCode = getComment(solution) + solution.getSolutionSourceCode();
+            saver.saveSourceCode(fileName, sourceCode);
+        });
+    }
+
+    @Override
+    public void saveAllLeetcodeSolutions() throws IOException {
+        List<Solution> solutionList = leetcodeApi.getAllSolutionsInfo();
+        changeProblemNamesForDuplicates(solutionList);
+        solutionList.forEach(solution -> {
+            String fileName = LEETCODE_PATH + solution.getFileName().replaceAll(INVALID_CHARACTERS, "");
             String sourceCode = getComment(solution) + solution.getSolutionSourceCode();
             saver.saveSourceCode(fileName, sourceCode);
         });

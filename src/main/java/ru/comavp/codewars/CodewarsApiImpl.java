@@ -21,7 +21,7 @@ public class CodewarsApiImpl implements CodewarsApi {
     private Parser parser;
 
     private String COOKIES = "";
-    private Integer totalPagesNumber = 2;
+    private Integer totalPagesNumber = 2; // todo
 
     public CodewarsApiImpl() {
         this.client = new RestClientImp();

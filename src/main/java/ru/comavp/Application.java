@@ -12,6 +12,7 @@ public class Application {
         log.debug("problems-scraper successfully started");
 
         //new ScraperImpl().saveAllTimusSolutions();
-        new ScraperImpl().saveAllCodewarsSolutions();
+        //new ScraperImpl().saveAllCodewarsSolutions();
+        new ScraperImpl().saveAllLeetcodeSolutions();
     }
 }

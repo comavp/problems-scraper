@@ -1,5 +1,8 @@
 package ru.comavp.parser;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,8 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.comavp.ApiUtils.CODEWARS_BASE_URL;
-import static ru.comavp.ApiUtils.TIMUS_BASE_URL;
+import static ru.comavp.ApiUtils.*;
 import static ru.comavp.entity.FileExtensionsEnum.getElementByLanguage;
 
 public class ParserImpl implements Parser {
@@ -36,6 +38,39 @@ public class ParserImpl implements Parser {
         return rows.stream()
                 .flatMap(row -> parseCodewarsSolutionInfoRow(row).stream())
                 .toList();
+    }
+
+    @Override
+    public List<Solution> parseLeetcodeSolutionsPage(String json) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        return toSolutionList(mapper.readValue(json, LeetcodeSolutionDump.class));
+    }
+
+    public List<Solution> toSolutionList(LeetcodeSolutionDump dump) {
+        return dump.getSubmissionsDump().stream()
+                .filter(item -> "Accepted".equals(item.getStatusDisplay()))
+                .map(this::parseSolutionFromLeetcodeSolutionDto)
+                .collect(Collectors.toList());
+    }
+
+    private Solution parseSolutionFromLeetcodeSolutionDto(LeetcodeSolutionDump.LeetcodeSolutionDto solutionDto) {
+        return Solution.builder()
+                .solutionId(String.valueOf(solutionDto.getId()))
+                .problem(getProblemFromLeetcodeSolutionDto(solutionDto))
+                .submitDate(String.valueOf(solutionDto.getTimestamp()))
+                .fileExtension(getElementByLanguage(solutionDto.getLang()).getExtension())
+                .solutionSourceCode(solutionDto.getCode())
+                .build();
+    }
+
+    private Problem getProblemFromLeetcodeSolutionDto(LeetcodeSolutionDump.LeetcodeSolutionDto solutionDto) {
+        return Problem.builder()
+                .problemId(solutionDto.getTitle())
+                .problemUrl(GET_LEETCODE_PROBLEMS_PATH + "/" + solutionDto.getTitleSlug())
+                .problemName(solutionDto.getTitle())
+                .build();
     }
 
     private List<Solution> parseCodewarsSolutionInfoRow(Element row) {

@@ -8,4 +8,5 @@ public interface Scraper {
     void saveAllTimusSolutions() throws IOException;
 
     void saveAllCodewarsSolutions() throws IOException;
+    void saveAllLeetcodeSolutions() throws IOException;
 }
