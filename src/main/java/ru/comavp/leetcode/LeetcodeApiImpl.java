@@ -31,8 +31,7 @@ public class LeetcodeApiImpl implements LeetcodeApi {
     public List<Solution> getAllSolutionsInfo() throws IOException {
         List<Solution> solutionList = new ArrayList<>();
         for (Integer currOffset = 0; currOffset <= maxOffset; currOffset += limit) {
-            String solutions = client.executeGetRequestWithHeaders(
-                    GET_LEETCODE_SUBMISSIONS_PATH,
+            String solutions = client.executeGetRequest(GET_LEETCODE_SUBMISSIONS_PATH,
                     Map.of(
                             "offset", currOffset.toString(),
                             "limit", limit.toString(),

@@ -2,7 +2,6 @@ package ru.comavp.codewars;
 
 import ru.comavp.client.RestClient;
 import ru.comavp.client.RestClientImp;
-import ru.comavp.entity.Author;
 import ru.comavp.entity.Solution;
 import ru.comavp.parser.Parser;
 import ru.comavp.parser.ParserImpl;
@@ -30,12 +29,12 @@ public class CodewarsApiImpl implements CodewarsApi {
 
     @Override
     public List<Solution> getAllSolutionsInfo() throws IOException {
-        String solutionsPage = client.executeGetRequestWithHeaders(GET_CODEWARS_COMPLETES_SOLUTIONS_PATH, new HashMap<>(),
+        String solutionsPage = client.executeGetRequest(GET_CODEWARS_COMPLETES_SOLUTIONS_PATH, new HashMap<>(),
                 new HashMap<>() {{ put("Cookie", COOKIES); }});
         List<Solution> solutionList = new ArrayList<>(parser.parseCodewarsSolutionsPage(solutionsPage));
 
         for (int i = 1; i <= totalPagesNumber; i++) {
-            solutionList.addAll(parser.parseCodewarsSolutionsPage(client.executeGetRequestWithHeaders(
+            solutionList.addAll(parser.parseCodewarsSolutionsPage(client.executeGetRequest(
                     GET_CODEWARS_COMPLETES_SOLUTIONS_PATH,
                     Map.of("page", String.valueOf(i)),
                     Map.of(

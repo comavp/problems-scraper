@@ -1,5 +1,6 @@
 package ru.comavp.timus;
 
+import ru.comavp.client.RequestBodyWrapper;
 import ru.comavp.client.RestClient;
 import ru.comavp.client.RestClientImp;
 import ru.comavp.entity.Author;
@@ -8,7 +9,6 @@ import ru.comavp.parser.Parser;
 import ru.comavp.parser.ParserImpl;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,17 +31,21 @@ public class TimusApiImpl implements TimusApi {
     @Override
     public String getSolutionSourceCodeById(String solutionId) throws IOException {
         String url = GET_SOLUTION_PATH + solutionId + C.getExtension();
-        return client.executePostRequest(url, author);
+        String payload = "Action=getsubmit&JudgeID=" + author.getJudgeId() + "&Password=" + author.getPassword();
+        return client.executePostRequest(url, new RequestBodyWrapper(payload, "application/x-www-form-urlencoded"));
     }
 
     @Override
     public List<Solution> getAllSolutionsInfo() throws IOException {
-        Map<String, String> queryParams = new HashMap<>() {{
-            put("author", author.getAuthorId());
-            put("status", "accepted");
-            put("count", "1000");
-        }};
-        String htmlResponse = client.executeGetRequest(GET_ACCEPTED_SOLUTIONS_PATH, queryParams);
+        String htmlResponse = client.executeGetRequest(GET_ACCEPTED_SOLUTIONS_PATH,
+                Map.of(
+                        "author", author.getAuthorId(),
+                        "status", "accepted",
+                        "count", "1000"
+                ),
+                Map.of(
+                        "Accept-Language", "ru-RU"
+                ));
         return parser.parseTimusSolutionsPage(htmlResponse);
     }
 }
