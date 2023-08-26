@@ -15,7 +15,13 @@ public enum FileExtensionsEnum {
     C("c", ".c"),
     JAVA("java", ".java"),
     PYTHON("python", ".py"),
-    PHP("php", ".php");
+    PHP("php", ".php"),
+
+    GNU_CPP_17("GNU C++17", ".cpp"),
+    GNU_CPP_14("GNU C++14", ".cpp"),
+    GNU_C("GNU C", ".c"),
+    MS_CPP("MS C++", ".cpp"),
+    JAVA_8("Java 8", ".java");
 
     private FileExtension fileExtension;
 

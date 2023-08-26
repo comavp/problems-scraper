@@ -9,4 +9,5 @@ public interface Scraper {
 
     void saveAllCodewarsSolutions() throws IOException;
     void saveAllLeetcodeSolutions() throws IOException;
+    void saveAllCodeforcesSolutions() throws IOException;
 }

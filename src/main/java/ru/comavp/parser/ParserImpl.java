@@ -7,8 +7,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.comavp.codeforces.CodeforcesSubmissionDto;
 import ru.comavp.entity.Problem;
 import ru.comavp.entity.Solution;
+import ru.comavp.leetcode.LeetcodeSolutionDump;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +22,8 @@ import static ru.comavp.entity.FileExtensionsEnum.getElementByLanguage;
 public class ParserImpl implements Parser {
 
     private int codewarsSolutionId = 1;
+    private final ObjectMapper MAPPER = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Override
     public List<Solution> parseTimusSolutionsPage(String htmlPage) {
@@ -42,13 +46,49 @@ public class ParserImpl implements Parser {
 
     @Override
     public List<Solution> parseLeetcodeSolutionsPage(String json) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        return toSolutionList(mapper.readValue(json, LeetcodeSolutionDump.class));
+        return toSolutionList(MAPPER.readValue(json, LeetcodeSolutionDump.class));
     }
 
-    public List<Solution> toSolutionList(LeetcodeSolutionDump dump) {
+    @Override
+    public List<Solution> parseCodeforcesSubmissionsPage(String htmlPage) {
+        Document doc = Jsoup.parse(htmlPage);
+        Elements rows = doc.getElementsByAttribute("data-submission-id");
+        return rows.stream()
+                .map(this::parseCodeforcesSolutionInfoRow)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CodeforcesSubmissionDto parseCodeforcesSubmissionDto(String json) throws JsonProcessingException {
+        return MAPPER.readValue(json, CodeforcesSubmissionDto.class);
+    }
+
+    private Solution parseCodeforcesSolutionInfoRow(Element row) {
+        String submissionId = row.attributes().get("data-submission-id");
+        String submitDate = row.getElementsByClass("format-time").get(0).text();
+        String fileExtension = row.getElementsByTag("td").get(4).text();
+        Element problemTag = row.getElementsByTag("td").get(3);
+        return Solution.builder()
+                .solutionId(submissionId)
+                .problem(getProblemFromCodeforcesTag(problemTag))
+                .submitDate(submitDate)
+                .fileExtension(getElementByLanguage(fileExtension).getExtension())
+                .solutionSourceCode("NOT_PARSED_YET")
+                .build();
+    }
+
+    private Problem getProblemFromCodeforcesTag(Element problemTag) {
+        String problemId = problemTag.attributes().get("data-problemid");
+        String url = problemTag.getElementsByTag("a").get(0).attributes().get("href");
+        String problemName = problemTag.getElementsByTag("a").get(0).text();
+        return Problem.builder()
+                .problemId(problemId)
+                .problemUrl(url)
+                .problemName(problemName)
+                .build();
+    }
+
+    private List<Solution> toSolutionList(LeetcodeSolutionDump dump) {
         return dump.getSubmissionsDump().stream()
                 .filter(item -> "Accepted".equals(item.getStatusDisplay()))
                 .map(this::parseSolutionFromLeetcodeSolutionDto)

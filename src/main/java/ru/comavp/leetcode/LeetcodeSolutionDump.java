@@ -1,12 +1,10 @@
-package ru.comavp.parser;
+package ru.comavp.leetcode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.comavp.entity.Solution;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor

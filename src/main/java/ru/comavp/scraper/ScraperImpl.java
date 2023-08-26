@@ -1,6 +1,9 @@
 package ru.comavp.scraper;
 
 import ru.comavp.Application;
+import ru.comavp.codeforces.CodeforcesApi;
+import ru.comavp.codeforces.CodeforcesApiImpl;
+import ru.comavp.codeforces.CodeforcesSubmissionDto;
 import ru.comavp.codewars.CodewarsApi;
 import ru.comavp.codewars.CodewarsApiImpl;
 import ru.comavp.entity.Author;
@@ -18,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class ScraperImpl implements Scraper {
 
@@ -25,11 +29,13 @@ public class ScraperImpl implements Scraper {
     private TimusApi timusApi;
     private CodewarsApi codewarsApi;
     private LeetcodeApi leetcodeApi;
+    private CodeforcesApi codeforcesApi;
     private Saver saver;
 
     private String TIMUS_PATH = "Timus Online Judge//";
     private String CODEWARS_PATH = "Codewars//";
     private String LEETCODE_PATH = "Leetcode//";
+    private String CODEFORCES_PATH = "Codeforces//";
 
     public static String INVALID_CHARACTERS = "[\\\\/:*?\"<>|]";
 
@@ -38,6 +44,7 @@ public class ScraperImpl implements Scraper {
         this.timusApi = new TimusApiImpl(author);
         this.codewarsApi = new CodewarsApiImpl();
         this.leetcodeApi = new LeetcodeApiImpl();
+        this.codeforcesApi = new CodeforcesApiImpl();
         this.saver = new FileSaver();
     }
 
@@ -81,6 +88,29 @@ public class ScraperImpl implements Scraper {
         changeProblemNamesForDuplicates(solutionList);
         solutionList.forEach(solution -> {
             String fileName = LEETCODE_PATH + solution.getFileName().replaceAll(INVALID_CHARACTERS, "");
+            String sourceCode = getComment(solution) + solution.getSolutionSourceCode();
+            saver.saveSourceCode(fileName, sourceCode);
+        });
+    }
+
+    @Override
+    public void saveAllCodeforcesSolutions() throws IOException {
+        List<Solution> solutionList = codeforcesApi.getAllSolutionsInfo();
+        changeProblemNamesForDuplicates(solutionList);
+        Map<String, String> solutionIdToContestName = new HashMap<>();
+        solutionList.forEach(solution -> {
+            try {
+                CodeforcesSubmissionDto submissionDto = codeforcesApi.getSubmissionSourceCode(solution.getSolutionId());
+                solution.setSolutionSourceCode(submissionDto.getSource());
+                solutionIdToContestName.put(solution.getSolutionId(), submissionDto.getContestName());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        solutionList.forEach(solution -> {
+            String filePath = CODEFORCES_PATH + "//" + solutionIdToContestName.get(solution.getSolutionId()) + "//";
+            String fileName = filePath + solution.getFileName().replaceAll(INVALID_CHARACTERS, "");
             String sourceCode = getComment(solution) + solution.getSolutionSourceCode();
             saver.saveSourceCode(fileName, sourceCode);
         });
